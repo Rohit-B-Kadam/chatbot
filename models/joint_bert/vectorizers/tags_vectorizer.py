@@ -6,19 +6,20 @@ import numpy as np
 class TagsVectorizer:
 
     def __init__(self):
-        pass
+        self.label_encoder = LabelEncoder()
 
-    def tokenize(self, tags_str_arr):
+    @staticmethod
+    def tokenize(tags_str_arr):
         return [s.split() for s in tags_str_arr]
 
     def fit(self, tags_str_arr):
-        self.label_encoder = LabelEncoder()
         data = ['<PAD>'] + [item for sublist in self.tokenize(tags_str_arr) for item in sublist]
         self.label_encoder.fit(data)
 
     def transform(self, tags_str_arr, valid_positions):
-        seq_length = valid_positions.shape[1]
+        seq_length = valid_positions.shape[1]  # .shape[0]: number of rows, .shape[1]: number of columns
         data = self.tokenize(tags_str_arr)
+        # [Ignore] we added the 'CLS' and 'SEP' token as the first and last token for every sentence respectively
         data = [self.label_encoder.transform(['O'] + x + ['O']).astype(np.int32) for x in data]
 
         output = np.zeros((len(data), seq_length))
@@ -51,10 +52,11 @@ class TagsVectorizer:
 
 
 if __name__ == '__main__':
-    tags_str_arr = ['O O B-X B-Y', 'O B-Y O']
-    valid_positions = np.array([[1, 1, 1, 1, 0, 1, 1], [1, 1, 0, 1, 1, 0, 1]])
+    tags_str_arr_ = ['O O B-X B-Y', 'O B-Y O']
+    valid_positions_ = np.array([[1, 1, 1, 1, 0, 1, 1], [1, 1, 0, 1, 1, 0, 1]])
 
-    vectorizer = TagsVectorizer(7)
-    vectorizer.fit(tags_str_arr)
-    data = vectorizer.transform(tags_str_arr, valid_positions)
+    vectorizer = TagsVectorizer()
+    vectorizer.fit(tags_str_arr_)
+    data_ = vectorizer.transform(tags_str_arr_, valid_positions_)
+    print(data_)
     print(vectorizer.label_encoder.classes_)

@@ -9,7 +9,8 @@ class NLUModel:
     def __init__(self):
         self.model = None
     
-    def visualize_metric(self, history_dic, metric_name):
+    @staticmethod
+    def visualize_metric(history_dic, metric_name):
         plt.plot(history_dic[metric_name])
         legend = ['train']
         if 'val_' + metric_name in history_dic:
@@ -20,13 +21,15 @@ class NLUModel:
         plt.xlabel('epoch')
         plt.legend(legend, loc='upper left')
         plt.show()
+        plt.savefig(metric_name)
         
     def predict(self, x):
         return self.model.predict(x)
     
     def save(self, model_path):
         self.model.save(model_path)
-        
+
+    @staticmethod
     def load(model_path, custom_objects=None):
         new_model = NLUModel()
         new_model.model = load_model(model_path, custom_objects=custom_objects)

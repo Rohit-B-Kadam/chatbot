@@ -90,7 +90,7 @@ class JointBertCRFModel(JointBertModel):
             json.dump(self.model_params, json_file)
         self.model.save(os.path.join(model_path, 'joint_bert_crf_model.h5'))
 
-    def load(load_folder_path):
+    def load(load_folder_path, **kwargs):
         with open(os.path.join(load_folder_path, 'params.json'), 'r') as json_file:
             model_params = json.load(json_file)
 

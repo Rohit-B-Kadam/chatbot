@@ -38,8 +38,12 @@ class BERTVectorizer:
 
     def tokenize(self, text: str):
         words = text.split()  # whitespace tokenizer
+        # text: add leah kauffman to my uncharted 4 nathan drake playlist
+        # words: ['add', 'leah', 'kauffman', 'to', 'my', 'uncharted', '4', 'nathan', 'drake', 'playlist']
+
         tokens = []
         valid_positions = []
+
         for i, word in enumerate(words):
             token = self.tokenizer.tokenize(word)
             tokens.extend(token)
@@ -48,7 +52,29 @@ class BERTVectorizer:
                     valid_positions.append(1)
                 else:
                     valid_positions.append(0)
+
+        # tokens: ['add', 'leah', 'ka', '##uf', '##fm', '##an', 'to', 'my', 'un', '##cha', '##rted', '4', 'nathan', 'drake', 'play', '##list']
+        # valid_positions:[1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0]
         return tokens, valid_positions
+
+    def __vectorize(self, text: str):
+        tokens, valid_positions = self.tokenize(text)
+        # insert the first "[CLS]"
+        tokens.insert(0, '[CLS]')
+        valid_positions.insert(0, 1)
+        # insert the last token "[SEP]"
+        tokens.append('[SEP]')
+        valid_positions.append(1)
+        # ['[CLS]', 'add', 'leah', 'ka', '##uf', '##fm', '##an', 'to', 'my', 'un', '##cha', '##rted', '4', 'nathan', 'drake', 'play', '##list', '[SEP]']
+        # [1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 1]
+
+        segment_ids = [0] * len(tokens)
+        # segment_ids: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        input_ids = self.tokenizer.convert_tokens_to_ids(tokens)
+        # input_ids: [101, 5587, 14188, 10556, 16093, 16715, 2319, 2000, 2026, 4895, 7507, 17724, 1018, 7150, 7867, 2377, 9863, 102] and the first is always 101 and the last is 102
+        input_mask = [1] * len(input_ids)
+        # input_mask: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        return input_ids, input_mask, segment_ids, valid_positions
 
     def transform(self, text_arr):
         input_ids = []
@@ -68,19 +94,3 @@ class BERTVectorizer:
         segment_ids = tf.keras.preprocessing.sequence.pad_sequences(segment_ids, padding='post')
         valid_positions = tf.keras.preprocessing.sequence.pad_sequences(valid_positions, padding='post')
         return input_ids, input_mask, segment_ids, valid_positions, sequence_lengths
-
-    def __vectorize(self, text: str):
-        tokens, valid_positions = self.tokenize(text)
-        # insert "[CLS]"
-        tokens.insert(0, '[CLS]')
-        valid_positions.insert(0, 1)
-        # insert "[SEP]"
-        tokens.append('[SEP]')
-        valid_positions.append(1)
-
-        segment_ids = [0] * len(tokens)
-        input_ids = self.tokenizer.convert_tokens_to_ids(tokens)
-
-        input_mask = [1] * len(input_ids)
-
-        return input_ids, input_mask, segment_ids, valid_positions
