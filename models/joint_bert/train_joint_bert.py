@@ -64,7 +64,7 @@ model.fit([train_input_ids, train_input_mask, train_segment_ids, train_valid_pos
           validation_data=([val_input_ids, val_input_mask, val_segment_ids, val_valid_positions], [val_tags, val_intents]),
           epochs=epochs, batch_size=batch_size)
 
-print(model.predict("add leah kauffman to my uncharted 4 nathan drake playlist"))
+# print(model.predict("add leah kauffman to my uncharted 4 nathan drake playlist"))
 
 # saving
 print('Saving ..')

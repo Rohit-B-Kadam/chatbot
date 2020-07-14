@@ -3,7 +3,7 @@ config = {
     "val": "models/dataset/snips/valid",
     "test": "models/dataset/snips/test",
     "save": "models/saved_models/joint_bert_model",
-    "epochs": 2,  # 5
+    "epochs": 7,  # 5
     "batch": 64,
     "type": "bert",  # [bert | albert]
     "hub_url": {

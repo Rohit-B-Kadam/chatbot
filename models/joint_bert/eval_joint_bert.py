@@ -58,4 +58,15 @@ f1_score, acc = get_results(data_input_ids, data_input_mask, data_segment_ids, d
 print('Slot f1_score = %f' % f1_score)
 print('Intent accuracy = %f' % acc)
 
+print("=== Prediction ===")
+data_text = ["add leah kauffman to my uncharted 4 nathan drake playlist"]
+input_id_, input_mask_, segment_id_, valid_position_, data_sequence_length_ = bert_vectorizer.transform(
+    data_text)
+predicted_tags, predicted_intents = model.predict_slots_intent(
+        [input_id_, input_mask_, segment_id_, valid_position_],
+        tags_vectorizer, intents_label_encoder, remove_start_end=True)
+print(f"Intent: {predicted_intents}")
+print(f"slots: {predicted_tags}")
+
+
 tf.compat.v1.reset_default_graph()
